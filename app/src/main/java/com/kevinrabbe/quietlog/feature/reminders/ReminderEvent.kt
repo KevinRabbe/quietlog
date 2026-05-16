@@ -7,4 +7,5 @@ sealed interface ReminderEvent {
     data object SaveReminder : ReminderEvent
     data class CompleteReminder(val id: Long) : ReminderEvent
     data class DeleteReminder(val id: Long) : ReminderEvent
+    data class ChangeFilter(val filter: ReminderFilter) : ReminderEvent
 }

@@ -6,6 +6,7 @@ import com.kevinrabbe.quietlog.core.notification.AlarmReminderScheduler
 import com.kevinrabbe.quietlog.data.repository.ReminderRepositoryImpl
 import com.kevinrabbe.quietlog.domain.repository.ReminderRepository
 import com.kevinrabbe.quietlog.domain.repository.ReminderScheduler
+import com.kevinrabbe.quietlog.domain.repository.SettingsRepository
 import com.kevinrabbe.quietlog.domain.usecase.CompleteReminderUseCase
 import com.kevinrabbe.quietlog.domain.usecase.CreateReminderUseCase
 import com.kevinrabbe.quietlog.domain.usecase.DeleteReminderUseCase
@@ -26,6 +27,10 @@ class AppContainer(context: Context) {
 
     val reminderScheduler: ReminderScheduler by lazy {
         AlarmReminderScheduler(context)
+    }
+
+    val settingsRepository: SettingsRepository by lazy {
+        com.kevinrabbe.quietlog.data.repository.SettingsRepositoryImpl(context)
     }
 
     val observeRemindersUseCase: ObserveRemindersUseCase by lazy {

@@ -23,6 +23,8 @@ class ReminderViewModel(
     private val _uiState = MutableStateFlow(ReminderUiState())
     val uiState: StateFlow<ReminderUiState> = _uiState.asStateFlow()
 
+    private val _filter = MutableStateFlow(ReminderFilter.ACTIVE)
+
     init {
         observeReminders()
     }
@@ -30,10 +32,21 @@ class ReminderViewModel(
     private fun observeReminders() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            observeRemindersUseCase().collect { reminders ->
+            kotlinx.coroutines.flow.combine(
+                observeRemindersUseCase(),
+                _filter
+            ) { reminders, filter ->
+                val filteredReminders = when (filter) {
+                    ReminderFilter.ALL -> reminders
+                    ReminderFilter.ACTIVE -> reminders.filter { it.status == com.kevinrabbe.quietlog.domain.model.ReminderStatus.ACTIVE }
+                    ReminderFilter.COMPLETED -> reminders.filter { it.status == com.kevinrabbe.quietlog.domain.model.ReminderStatus.COMPLETED }
+                }
+                filteredReminders to filter
+            }.collect { (reminders, filter) ->
                 _uiState.update {
                     it.copy(
                         reminders = reminders,
+                        filter = filter,
                         isLoading = false
                     )
                 }
@@ -43,6 +56,9 @@ class ReminderViewModel(
 
     fun onEvent(event: ReminderEvent) {
         when (event) {
+            is ReminderEvent.ChangeFilter -> {
+                _filter.value = event.filter
+            }
             is ReminderEvent.ToggleAddDialog -> {
                 _uiState.update { it.copy(isAddingReminder = !it.isAddingReminder) }
             }

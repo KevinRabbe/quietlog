@@ -25,6 +25,11 @@ val ViewModelProvider.Factory.Companion.AppFactory: ViewModelProvider.Factory
                         deleteReminderUseCase = container.deleteReminderUseCase
                     ) as T
                 }
+                SettingsViewModel::class.java -> {
+                    SettingsViewModel(
+                        settingsRepository = container.settingsRepository
+                    ) as T
+                }
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }
         }

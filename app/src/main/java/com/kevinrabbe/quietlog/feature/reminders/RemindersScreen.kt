@@ -33,12 +33,28 @@ fun RemindersScreen(
             }
         }
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            if (uiState.reminders.isEmpty() && !uiState.isLoading) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ReminderFilter.entries.forEach { filter ->
+                    FilterChip(
+                        selected = uiState.filter == filter,
+                        onClick = { viewModel.onEvent(ReminderEvent.ChangeFilter(filter)) },
+                        label = { Text(filter.name.lowercase().replaceFirstChar { it.uppercase() }) }
+                    )
+                }
+            }
+
+            Box(modifier = Modifier.weight(1f)) {
+                if (uiState.reminders.isEmpty() && !uiState.isLoading) {
                 Text(
                     text = "No reminders yet.",
                     modifier = Modifier.align(Alignment.Center),
@@ -68,6 +84,8 @@ fun RemindersScreen(
                 AddReminderDialog(
                     title = uiState.newReminderTitle,
                     onTitleChange = { viewModel.onEvent(ReminderEvent.TitleChanged(it)) },
+                    dateTimeMillis = uiState.newReminderDateTime,
+                    onDateTimeChange = { viewModel.onEvent(ReminderEvent.DateTimeChanged(it)) },
                     onDismiss = { viewModel.onEvent(ReminderEvent.ToggleAddDialog) },
                     onConfirm = { viewModel.onEvent(ReminderEvent.SaveReminder) }
                 )
@@ -118,24 +136,127 @@ fun ReminderItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddReminderDialog(
     title: String,
     onTitleChange: (String) -> Unit,
+    dateTimeMillis: Long,
+    onDateTimeChange: (Long) -> Unit,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    val dateFormat = remember { SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault()) }
+    val timeFormat = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = dateTimeMillis
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { dateMillis ->
+                        // Keep current time, update date
+                        val calendar = Calendar.getInstance().apply {
+                            timeInMillis = dateTimeMillis
+                        }
+                        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                        val minute = calendar.get(Calendar.MINUTE)
+
+                        val newCalendar = Calendar.getInstance().apply {
+                            timeInMillis = dateMillis
+                            set(Calendar.HOUR_OF_DAY, hour)
+                            set(Calendar.MINUTE, minute)
+                        }
+                        onDateTimeChange(newCalendar.timeInMillis)
+                    }
+                    showDatePicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    if (showTimePicker) {
+        val calendar = Calendar.getInstance().apply { timeInMillis = dateTimeMillis }
+        val timePickerState = rememberTimePickerState(
+            initialHour = calendar.get(Calendar.HOUR_OF_DAY),
+            initialMinute = calendar.get(Calendar.MINUTE),
+            is24Hour = true
+        )
+
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val newCalendar = Calendar.getInstance().apply {
+                        timeInMillis = dateTimeMillis
+                        set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                        set(Calendar.MINUTE, timePickerState.minute)
+                    }
+                    onDateTimeChange(newCalendar.timeInMillis)
+                    showTimePicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            }
+        )
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Add Reminder") },
         text = {
-            TextField(
-                value = title,
-                onValueChange = onTitleChange,
-                label = { Text("Title") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                TextField(
+                    value = title,
+                    onValueChange = onTitleChange,
+                    label = { Text("Title") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Date: ${dateFormat.format(Date(dateTimeMillis))}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    TextButton(onClick = { showDatePicker = true }) {
+                        Text("Change")
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Time: ${timeFormat.format(Date(dateTimeMillis))}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    TextButton(onClick = { showTimePicker = true }) {
+                        Text("Change")
+                    }
+                }
+            }
         },
         confirmButton = {
             Button(onClick = onConfirm, enabled = title.isNotBlank()) {

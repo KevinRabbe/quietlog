@@ -97,6 +97,7 @@ fun RemindersScreen(
         }
     }
 }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

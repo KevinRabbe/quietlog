@@ -3,7 +3,7 @@ package com.kevinrabbe.quietlog.data.mapper
 import com.kevinrabbe.quietlog.data.local.ReminderEntity
 import com.kevinrabbe.quietlog.domain.model.NotificationMode
 import com.kevinrabbe.quietlog.domain.model.Reminder
-import com.kevinrabbe.quietlog.domain.model.Reminderstatus
+import com.kevinrabbe.quietlog.domain.model.ReminderStatus
 import com.kevinrabbe.quietlog.domain.model.RepeatRule
 
 fun ReminderEntity.toDomain(): Reminder = Reminder(

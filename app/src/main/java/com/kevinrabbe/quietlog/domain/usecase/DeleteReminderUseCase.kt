@@ -1,6 +1,7 @@
 package com.kevinrabbe.quietlog.domain.usecase
 
 import com.kevinrabbe.quietlog.domain.repository.ReminderRepository
+import com.kevinrabbe.quietlog.domain.repository.ReminderScheduler
 
 class DeleteReminderUseCase(
     private val repository: ReminderRepository,

@@ -2,6 +2,7 @@ package com.kevinrabbe.quietlog.domain.usecase
 
 import com.kevinrabbe.quietlog.domain.model.Reminder
 import com.kevinrabbe.quietlog.domain.repository.ReminderRepository
+import com.kevinrabbe.quietlog.domain.repository.ReminderScheduler
 
 class CreateReminderUseCase(
     private val repository: ReminderRepository,

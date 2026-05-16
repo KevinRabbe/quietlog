@@ -1,0 +1,4 @@
+<resources>
+    <!-- Base application theme. Used as a fallback while Compose is loading. -->
+    <style name="Theme.QuietLog" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">QuietLog</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_reminders">Reminders</string>
+    <string name="nav_shopping">Shopping</string>
+    <string name="nav_games">Games</string>
+    <string name="nav_settings">Settings</string>
+</resources>

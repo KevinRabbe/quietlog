@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.kevinrabbe.quietlog.QuietLogApplication
 import com.kevinrabbe.quietlog.feature.reminders.ReminderViewModel
+import com.kevinrabbe.quietlog.feature.settings.SettingsViewModel
+import com.kevinrabbe.quietlog.feature.shopping.ShoppingViewModel
+import com.kevinrabbe.quietlog.feature.games.GameViewModel
 
 /**
  * Factory to create ViewModels with dependencies from [AppContainer].
@@ -35,8 +38,8 @@ val ViewModelProvider.Factory.Companion.AppFactory: ViewModelProvider.Factory
                         repository = container.shoppingRepository
                     ) as T
                 }
-                com.kevinrabbe.quietlog.feature.games.GameViewModel::class.java -> {
-                    com.kevinrabbe.quietlog.feature.games.GameViewModel(
+                GameViewModel::class.java -> {
+                    GameViewModel(
                         repository = container.gameEventRepository
                     ) as T
                 }

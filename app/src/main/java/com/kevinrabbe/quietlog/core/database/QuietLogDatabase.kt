@@ -6,6 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.kevinrabbe.quietlog.data.local.ReminderDao
 import com.kevinrabbe.quietlog.data.local.ReminderEntity
+import com.kevinrabbe.quietlog.data.local.ShoppingDao
+import com.kevinrabbe.quietlog.data.local.ShoppingItemEntity
+import com.kevinrabbe.quietlog.data.local.GameEventDao
+import com.kevinrabbe.quietlog.data.local.GameEventEntity
 
 @Database(
     entities = [
@@ -19,8 +23,8 @@ import com.kevinrabbe.quietlog.data.local.ReminderEntity
 abstract class QuietLogDatabase : RoomDatabase() {
 
     abstract fun reminderDao(): ReminderDao
-    abstract fun shoppingDao(): com.kevinrabbe.quietlog.data.local.ShoppingDao
-    abstract fun gameEventDao(): com.kevinrabbe.quietlog.data.local.GameEventDao
+    abstract fun shoppingDao(): ShoppingDao
+    abstract fun gameEventDao(): GameEventDao
 
     companion object {
         @Volatile

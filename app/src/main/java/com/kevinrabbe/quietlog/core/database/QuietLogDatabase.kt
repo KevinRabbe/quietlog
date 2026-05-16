@@ -8,13 +8,17 @@ import com.kevinrabbe.quietlog.data.local.ReminderDao
 import com.kevinrabbe.quietlog.data.local.ReminderEntity
 
 @Database(
-    entities = [ReminderEntity::class],
-    version = 1,
+    entities = [
+        ReminderEntity::class,
+        ShoppingItemEntity::class
+    ],
+    version = 2,
     exportSchema = false
 )
 abstract class QuietLogDatabase : RoomDatabase() {
 
     abstract fun reminderDao(): ReminderDao
+    abstract fun shoppingDao(): com.kevinrabbe.quietlog.data.local.ShoppingDao
 
     companion object {
         @Volatile
@@ -26,7 +30,8 @@ abstract class QuietLogDatabase : RoomDatabase() {
                     context.applicationContext,
                     QuietLogDatabase::class.java,
                     "quietlog_database"
-                ).build().also { instance = it }
+                ).fallbackToDestructiveMigration()
+                 .build().also { instance = it }
             }
         }
     }

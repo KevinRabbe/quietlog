@@ -30,6 +30,11 @@ val ViewModelProvider.Factory.Companion.AppFactory: ViewModelProvider.Factory
                         settingsRepository = container.settingsRepository
                     ) as T
                 }
+                ShoppingViewModel::class.java -> {
+                    ShoppingViewModel(
+                        repository = container.shoppingRepository
+                    ) as T
+                }
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }
         }

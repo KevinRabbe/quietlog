@@ -1,5 +1,7 @@
 package com.kevinrabbe.quietlog.feature.reminders
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -94,6 +97,7 @@ fun RemindersScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderItem(
     reminder: Reminder,
@@ -103,37 +107,87 @@ fun ReminderItem(
     val dateFormat = remember { SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()) }
     val dateString = dateFormat.format(Date(reminder.dateTimeMillis))
 
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = reminder.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    textDecoration = if (reminder.status == ReminderStatus.COMPLETED) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
-                )
-                Text(
-                    text = dateString,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            if (reminder.status != ReminderStatus.COMPLETED) {
-                IconButton(onClick = onComplete) {
-                    Icon(Icons.Default.Check, contentDescription = "Complete")
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            when (value) {
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    if (reminder.status != ReminderStatus.COMPLETED) {
+                        onComplete()
+                    }
+                    false // Don't actually remove from list yet, let VM handle state
                 }
-            }
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
+                SwipeToDismissBoxValue.EndToStart -> {
+                    onDelete()
+                    true
+                }
+                else -> false
             }
         }
-    }
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = {
+            val color by animateColorAsState(
+                when (dismissState.targetValue) {
+                    SwipeToDismissBoxValue.StartToEnd -> Color(0xFF4CAF50) // Green for complete
+                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
+                    else -> Color.Transparent
+                }, label = "swipe_color"
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color, MaterialTheme.shapes.medium)
+                    .padding(horizontal = 20.dp),
+                contentAlignment = when (dismissState.targetValue) {
+                    SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
+                    else -> Alignment.CenterEnd
+                }
+            ) {
+                val icon = when (dismissState.targetValue) {
+                    SwipeToDismissBoxValue.StartToEnd -> Icons.Default.Check
+                    SwipeToDismissBoxValue.EndToStart -> Icons.Default.Delete
+                    else -> null
+                }
+                icon?.let { Icon(it, contentDescription = null, tint = Color.White) }
+            }
+        },
+        content = {
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = reminder.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            textDecoration = if (reminder.status == ReminderStatus.COMPLETED) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
+                        )
+                        Text(
+                            text = dateString,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    // Keep buttons as fallback/accessibility
+                    if (reminder.status != ReminderStatus.COMPLETED) {
+                        IconButton(onClick = onComplete) {
+                            Icon(Icons.Default.Check, contentDescription = "Complete")
+                        }
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                    }
+                }
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

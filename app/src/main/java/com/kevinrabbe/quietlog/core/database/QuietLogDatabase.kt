@@ -10,15 +10,17 @@ import com.kevinrabbe.quietlog.data.local.ReminderEntity
 @Database(
     entities = [
         ReminderEntity::class,
-        ShoppingItemEntity::class
+        ShoppingItemEntity::class,
+        GameEventEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class QuietLogDatabase : RoomDatabase() {
 
     abstract fun reminderDao(): ReminderDao
     abstract fun shoppingDao(): com.kevinrabbe.quietlog.data.local.ShoppingDao
+    abstract fun gameEventDao(): com.kevinrabbe.quietlog.data.local.GameEventDao
 
     companion object {
         @Volatile

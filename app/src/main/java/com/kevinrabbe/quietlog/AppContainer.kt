@@ -8,6 +8,7 @@ import com.kevinrabbe.quietlog.domain.repository.ReminderRepository
 import com.kevinrabbe.quietlog.domain.repository.ReminderScheduler
 import com.kevinrabbe.quietlog.domain.repository.SettingsRepository
 import com.kevinrabbe.quietlog.domain.repository.ShoppingRepository
+import com.kevinrabbe.quietlog.domain.repository.GameEventRepository
 import com.kevinrabbe.quietlog.domain.usecase.CompleteReminderUseCase
 import com.kevinrabbe.quietlog.domain.usecase.CreateReminderUseCase
 import com.kevinrabbe.quietlog.domain.usecase.DeleteReminderUseCase
@@ -36,6 +37,10 @@ class AppContainer(context: Context) {
 
     val shoppingRepository: ShoppingRepository by lazy {
         com.kevinrabbe.quietlog.data.repository.ShoppingRepositoryImpl(database.shoppingDao())
+    }
+
+    val gameEventRepository: GameEventRepository by lazy {
+        com.kevinrabbe.quietlog.data.repository.GameEventRepositoryImpl(database.gameEventDao())
     }
 
     val observeRemindersUseCase: ObserveRemindersUseCase by lazy {

@@ -35,6 +35,11 @@ val ViewModelProvider.Factory.Companion.AppFactory: ViewModelProvider.Factory
                         repository = container.shoppingRepository
                     ) as T
                 }
+                com.kevinrabbe.quietlog.feature.games.GameViewModel::class.java -> {
+                    com.kevinrabbe.quietlog.feature.games.GameViewModel(
+                        repository = container.gameEventRepository
+                    ) as T
+                }
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }
         }

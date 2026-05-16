@@ -2,8 +2,10 @@ package com.kevinrabbe.quietlog
 
 import android.content.Context
 import com.kevinrabbe.quietlog.core.database.QuietLogDatabase
+import com.kevinrabbe.quietlog.core.notification.AlarmReminderScheduler
 import com.kevinrabbe.quietlog.data.repository.ReminderRepositoryImpl
 import com.kevinrabbe.quietlog.domain.repository.ReminderRepository
+import com.kevinrabbe.quietlog.domain.repository.ReminderScheduler
 import com.kevinrabbe.quietlog.domain.usecase.CompleteReminderUseCase
 import com.kevinrabbe.quietlog.domain.usecase.CreateReminderUseCase
 import com.kevinrabbe.quietlog.domain.usecase.DeleteReminderUseCase
@@ -22,19 +24,23 @@ class AppContainer(context: Context) {
         ReminderRepositoryImpl(database.reminderDao())
     }
 
+    val reminderScheduler: ReminderScheduler by lazy {
+        AlarmReminderScheduler(context)
+    }
+
     val observeRemindersUseCase: ObserveRemindersUseCase by lazy {
         ObserveRemindersUseCase(reminderRepository)
     }
 
     val createReminderUseCase: CreateReminderUseCase by lazy {
-        CreateReminderUseCase(reminderRepository)
+        CreateReminderUseCase(reminderRepository, reminderScheduler)
     }
 
     val completeReminderUseCase: CompleteReminderUseCase by lazy {
-        CompleteReminderUseCase(reminderRepository)
+        CompleteReminderUseCase(reminderRepository, reminderScheduler)
     }
 
     val deleteReminderUseCase: DeleteReminderUseCase by lazy {
-        DeleteReminderUseCase(reminderRepository)
+        DeleteReminderUseCase(reminderRepository, reminderScheduler)
     }
 }

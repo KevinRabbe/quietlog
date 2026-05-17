@@ -4,5 +4,12 @@ enum class RepeatRule {
     NONE,
     DAILY,
     WEEKLY,
-    MONTHLY
+    MONTHLY,
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+    SUNDAY
 }

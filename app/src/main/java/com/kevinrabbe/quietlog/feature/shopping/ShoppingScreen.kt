@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,21 +47,38 @@ fun ShoppingScreen(
                 .padding(padding)
         ) {
             // Input field
-            TextField(
+            OutlinedTextField(
                 value = uiState.newItemTitle,
                 onValueChange = { viewModel.onEvent(ShoppingEvent.TitleChanged(it)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 placeholder = { Text("Add item...") },
                 singleLine = true,
+                shape = MaterialTheme.shapes.medium,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { viewModel.onEvent(ShoppingEvent.AddItem) })
             )
 
             if (uiState.items.isEmpty() && !uiState.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("List is empty.", style = MaterialTheme.typography.bodyLarge)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Empty shopping list",
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Your shopping list is empty",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             } else {
                 LazyColumn(
@@ -93,8 +111,9 @@ fun ShoppingItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 56.dp) // Generous touch target for lists
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(

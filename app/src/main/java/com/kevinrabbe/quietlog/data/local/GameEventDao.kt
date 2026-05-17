@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.Flow
 interface GameEventDao {
     @Query("SELECT * FROM game_events ORDER BY timestamp ASC")
     fun observeAll(): Flow<List<GameEventEntity>>
+    @Query("SELECT * FROM game_events WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): GameEventEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: GameEventEntity): Long

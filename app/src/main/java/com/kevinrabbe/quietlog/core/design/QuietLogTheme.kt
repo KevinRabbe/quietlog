@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 
 // Calm, muted dark palette — no flashy colors
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF9ECAFF),           // Soft blue
+    primary = Color(0xFFA5C8F2),           // Softer, desaturated blue
     onPrimary = Color(0xFF003258),
     primaryContainer = Color(0xFF00497D),
     onPrimaryContainer = Color(0xFFD1E4FF),
@@ -27,12 +27,12 @@ private val DarkColorScheme = darkColorScheme(
     errorContainer = Color(0xFF93000A),
     onErrorContainer = Color(0xFFFFDAD6),
 
-    background = Color(0xFF1A1C1E),        // Deep near-black
+    background = Color(0xFF121212),        // Deeper near-black for a calmer feel
     onBackground = Color(0xFFE2E2E6),
 
-    surface = Color(0xFF1A1C1E),
+    surface = Color(0xFF121212),
     onSurface = Color(0xFFE2E2E6),
-    surfaceVariant = Color(0xFF43474E),
+    surfaceVariant = Color(0xFF2D3035),    // Slightly darker surface variant
     onSurfaceVariant = Color(0xFFC3C7CF),
 
     outline = Color(0xFF8D9199),

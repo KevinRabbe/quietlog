@@ -17,7 +17,7 @@ import com.kevinrabbe.quietlog.data.local.GameEventEntity
         ShoppingItemEntity::class,
         GameEventEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class QuietLogDatabase : RoomDatabase() {
@@ -36,8 +36,13 @@ abstract class QuietLogDatabase : RoomDatabase() {
                     context.applicationContext,
                     QuietLogDatabase::class.java,
                     "quietlog_database"
-                ).fallbackToDestructiveMigration()
-                 .build().also { instance = it }
+                )
+                // WARNING: fallbackToDestructiveMigration is used here strictly for the rapid MVP prototyping phase.
+                // It allows database schemas to be altered during active development without writing complex manual migrations.
+                // BEFORE the public production release, this must be replaced with proper Room Migration paths to prevent
+                // existing users from losing local data on application updates.
+                .fallbackToDestructiveMigration()
+                .build().also { instance = it }
             }
         }
     }

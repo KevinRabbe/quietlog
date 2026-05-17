@@ -40,7 +40,9 @@ val ViewModelProvider.Factory.Companion.AppFactory: ViewModelProvider.Factory
                 }
                 GameViewModel::class.java -> {
                     GameViewModel(
-                        repository = container.gameEventRepository
+                        application = application,
+                        repository = container.gameEventRepository,
+                        scheduler = container.gameEventScheduler
                     ) as T
                 }
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

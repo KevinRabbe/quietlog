@@ -22,6 +22,10 @@ data class GameEvent(
     val timestamp: Long,
     val notes: String = "",
     val status: GameEventStatus = GameEventStatus.UPCOMING,
+    val packageName: String? = null,
+    val reminderOffset: Int = 0, // in minutes
+    val repeatRule: RepeatRule = RepeatRule.NONE,
+    val notificationMode: NotificationMode = NotificationMode.NOTIFICATION,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

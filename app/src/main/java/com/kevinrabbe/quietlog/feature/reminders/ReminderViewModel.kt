@@ -60,7 +60,9 @@ class ReminderViewModel(
                 _filter.value = event.filter
             }
             is ReminderEvent.ToggleAddDialog -> {
+                android.util.Log.d("QuietLog", "ToggleAddDialog clicked! Current isAddingReminder = ${_uiState.value.isAddingReminder}")
                 _uiState.update { it.copy(isAddingReminder = !it.isAddingReminder) }
+                android.util.Log.d("QuietLog", "ToggleAddDialog finished! New isAddingReminder = ${_uiState.value.isAddingReminder}")
             }
             is ReminderEvent.TitleChanged -> {
                 _uiState.update { it.copy(newReminderTitle = event.title) }

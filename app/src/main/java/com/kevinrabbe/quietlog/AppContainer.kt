@@ -3,6 +3,7 @@ package com.kevinrabbe.quietlog
 import android.content.Context
 import com.kevinrabbe.quietlog.core.database.QuietLogDatabase
 import com.kevinrabbe.quietlog.core.notification.AlarmReminderScheduler
+import com.kevinrabbe.quietlog.core.notification.GameEventScheduler
 import com.kevinrabbe.quietlog.data.repository.ReminderRepositoryImpl
 import com.kevinrabbe.quietlog.domain.repository.ReminderRepository
 import com.kevinrabbe.quietlog.domain.repository.ReminderScheduler
@@ -41,6 +42,10 @@ class AppContainer(context: Context) {
 
     val gameEventRepository: GameEventRepository by lazy {
         com.kevinrabbe.quietlog.data.repository.GameEventRepositoryImpl(database.gameEventDao())
+    }
+
+    val gameEventScheduler: GameEventScheduler by lazy {
+        GameEventScheduler(context)
     }
 
     val observeRemindersUseCase: ObserveRemindersUseCase by lazy {

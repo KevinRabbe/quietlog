@@ -28,7 +28,16 @@ class NotificationHelper(private val context: Context) {
                 description = "Used for reminder notifications"
                 enableVibration(true)
             }
+            val gameChannel = NotificationChannel(
+                GAME_CHANNEL_ID,
+                "Game Events",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Used for game event notifications"
+                enableVibration(true)
+            }
             notificationManager.createNotificationChannel(channel)
+            notificationManager.createNotificationChannel(gameChannel)
         }
     }
 
@@ -56,7 +65,35 @@ class NotificationHelper(private val context: Context) {
         notificationManager.notify(id.toInt(), notification)
     }
 
+    fun showGameEventNotification(id: Long, title: String, notes: String, isSilent: Boolean) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            id.toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val builder = NotificationCompat.Builder(context, GAME_CHANNEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(notes.ifBlank { "Event starting soon!" })
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_EVENT)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+
+        if (isSilent) {
+            builder.setSilent(true)
+        }
+
+        notificationManager.notify(id.toInt() * 10, builder.build()) // Use different ID space
+    }
+
     companion object {
         private const val CHANNEL_ID = "reminder_channel"
+        private const val GAME_CHANNEL_ID = "game_event_channel"
     }
 }

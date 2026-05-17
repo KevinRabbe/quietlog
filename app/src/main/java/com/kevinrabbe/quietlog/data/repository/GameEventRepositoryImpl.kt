@@ -18,8 +18,16 @@ class GameEventRepositoryImpl(
         }
     }
 
+    override suspend fun getEventById(id: Long): GameEvent? {
+        return dao.getById(id)?.toDomain()
+    }
+
     override suspend fun insertEvent(event: GameEvent) {
         dao.insert(event.toEntity())
+    }
+
+    override suspend fun insertEventAndGetId(event: GameEvent): Long {
+        return dao.insert(event.toEntity())
     }
 
     override suspend fun updateEvent(event: GameEvent) {

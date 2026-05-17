@@ -7,6 +7,13 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
     <application
         android:name=".QuietLogApplication"
         android:allowBackup="true"
@@ -28,6 +35,10 @@
 
         <receiver
             android:name=".core.notification.ReminderNotificationReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".core.notification.GameEventNotificationReceiver"
             android:exported="false" />
 
         <receiver

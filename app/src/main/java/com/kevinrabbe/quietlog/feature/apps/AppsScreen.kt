@@ -1,16 +1,19 @@
-package com.kevinrabbe.quietlog.feature.games
+package com.kevinrabbe.quietlog.feature.apps
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Launch
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,15 +37,18 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun GamesScreen(
-    viewModel: GameViewModel = viewModel(factory = ViewModelProvider.Factory.AppFactory)
+fun AppsScreen(
+    viewModel: AppViewModel = viewModel(factory = ViewModelProvider.Factory.AppFactory)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.onEvent(GameUiEvent.ToggleAddDialog) }) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.content_description_add_game_event))
+            FloatingActionButton(onClick = { viewModel.onEvent(AppUiEvent.ToggleAddDialog) }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add App Event"
+                )
             }
         }
     ) { padding ->
@@ -51,33 +59,42 @@ fun GamesScreen(
         ) {
             if (uiState.events.isEmpty() && !uiState.isLoading) {
                 Column(
-                    modifier = Modifier.align(Alignment.Center).padding(24.dp),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.SportsEsports,
-                        contentDescription = stringResource(R.string.content_description_no_game_events),
+                        imageVector = Icons.Default.Apps,
+                        contentDescription = "No App Events",
                         modifier = Modifier.size(64.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = stringResource(R.string.games_empty),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = "No linked apps or events yet.",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Add an event and link it to an installed app to schedule reminder alarms.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 24.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(uiState.events, key = { it.id }) { event ->
-                        GameEventItem(
+                        AppEventItem(
                             event = event,
-                            onDelete = { viewModel.onEvent(GameUiEvent.DeleteEvent(event.id)) }
+                            onDelete = { viewModel.onEvent(AppUiEvent.DeleteEvent(event.id)) }
                         )
                     }
                 }
@@ -88,7 +105,7 @@ fun GamesScreen(
             }
 
             if (uiState.isAddingEvent) {
-                AddGameEventDialog(
+                AddAppEventDialog(
                     uiState = uiState,
                     onEvent = viewModel::onEvent
                 )
@@ -98,7 +115,7 @@ fun GamesScreen(
 }
 
 @Composable
-fun GameEventItem(
+fun AppEventItem(
     event: GameEvent,
     onDelete: () -> Unit
 ) {
@@ -107,65 +124,198 @@ fun GameEventItem(
     val context = LocalContext.current
     val pm = context.packageManager
 
-    val appName = remember(event.packageName) {
-        event.packageName?.let {
+    val appLabel = remember(event.packageName) {
+        event.packageName?.let { pkg ->
             try {
-                val appInfo = pm.getApplicationInfo(it, 0)
+                val appInfo = pm.getApplicationInfo(pkg, 0)
                 pm.getApplicationLabel(appInfo).toString()
             } catch (e: Exception) {
-                null
+                pkg.substringAfterLast('.')
             }
         }
     }
 
+    val launchIntent = remember(event.packageName) {
+        event.packageName?.let { pm.getLaunchIntentForPackage(it) }
+    }
+
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        )
     ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = when (event.eventType) {
-                            GameEventType.RAID -> Icons.Default.Groups
-                            GameEventType.SPAWN -> Icons.Default.Timer
-                            GameEventType.MATCH -> Icons.Default.SportsEsports
-                            GameEventType.TOURNAMENT -> Icons.Default.EmojiEvents
-                            GameEventType.OTHER -> Icons.Default.Event
-                        },
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = when (event.eventType) {
+                        GameEventType.RAID -> Icons.Default.Groups
+                        GameEventType.SPAWN -> Icons.Default.Timer
+                        GameEventType.MATCH -> Icons.Default.SportsEsports
+                        GameEventType.TOURNAMENT -> Icons.Default.EmojiEvents
+                        GameEventType.OTHER -> Icons.Default.Event
+                    },
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = event.title,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    appLabel?.let { label ->
+                        Text(
+                            text = "App: $label",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                IconButton(
+                    onClick = onDelete,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete")
+                }
+            }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Scheduled time:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = dateString,
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-                val metaText = buildList {
-                    if (appName != null) add("App: $appName")
-                    add("Time: $dateString")
-                    add("Repeat: ${event.repeatRule.name.lowercase().replaceFirstChar { it.uppercase() }}")
-                    add("Reminder: ${if (event.reminderOffset == 0) "At event time" else "${event.reminderOffset} min before"}")
-                    add("Notification: ${event.notificationMode.name.lowercase().replaceFirstChar { it.uppercase() }}")
-                }.joinToString("\n")
 
-                Text(
-                    text = metaText,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Repeat pattern:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = event.repeatRule.name.lowercase().replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Notification mode:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = event.notificationMode.name.lowercase().replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier.defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
-            ) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
+
+            if (event.packageName != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (launchIntent != null) {
+                        Button(
+                            onClick = {
+                                try {
+                                    context.startActivity(launchIntent)
+                                } catch (e: Exception) {
+                                    // Silent fallback
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            ),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Launch,
+                                contentDescription = "Launch",
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Launch App",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            val intent = Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, event.packageName)
+                            }
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                try {
+                                    context.startActivity(Intent(android.provider.Settings.ACTION_SETTINGS))
+                                } catch (ex: Exception) {}
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        ),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notification Settings",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "App Settings",
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                }
             }
         }
     }
@@ -173,15 +323,15 @@ fun GameEventItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddGameEventDialog(
-    uiState: GameUiState,
-    onEvent: (GameUiEvent) -> Unit
+fun AddAppEventDialog(
+    uiState: AppUiState,
+    onEvent: (AppUiEvent) -> Unit
 ) {
     val scrollState = rememberScrollState()
 
     AlertDialog(
-        onDismissRequest = { onEvent(GameUiEvent.ToggleAddDialog) },
-        title = { Text(stringResource(R.string.add_game_event)) },
+        onDismissRequest = { onEvent(AppUiEvent.ToggleAddDialog) },
+        title = { Text("Add App Event") },
         text = {
             Column(
                 modifier = Modifier
@@ -191,57 +341,57 @@ fun AddGameEventDialog(
             ) {
                 TextField(
                     value = uiState.newEventTitle,
-                    onValueChange = { onEvent(GameUiEvent.TitleChanged(it)) },
-                    label = { Text(stringResource(R.string.title)) },
+                    onValueChange = { onEvent(AppUiEvent.TitleChanged(it)) },
+                    label = { Text("Title") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 EventTypeSelector(
                     selectedType = uiState.newEventType,
-                    onTypeSelected = { onEvent(GameUiEvent.TypeChanged(it)) }
+                    onTypeSelected = { onEvent(AppUiEvent.TypeChanged(it)) }
                 )
 
                 AppSelector(
                     selectedPackageName = uiState.newEventPackageName,
                     installedApps = uiState.installedApps,
-                    onAppSelected = { onEvent(GameUiEvent.PackageNameChanged(it)) }
+                    onAppSelected = { onEvent(AppUiEvent.PackageNameChanged(it)) }
                 )
 
                 TimeDateSelectors(
                     dateTimeMillis = uiState.newEventDateTime,
                     isTimeSelected = uiState.isTimeSelected,
                     repeatRule = uiState.newEventRepeatRule,
-                    onDateTimeChanged = { onEvent(GameUiEvent.DateTimeChanged(it)) }
+                    onDateTimeChanged = { onEvent(AppUiEvent.DateTimeChanged(it)) }
                 )
 
                 RepeatRuleSelector(
                     selectedRule = uiState.newEventRepeatRule,
-                    onRuleSelected = { onEvent(GameUiEvent.RepeatRuleChanged(it)) }
+                    onRuleSelected = { onEvent(AppUiEvent.RepeatRuleChanged(it)) }
                 )
 
                 ReminderOffsetSelector(
                     selectedOffset = uiState.newEventReminderOffset,
-                    onOffsetSelected = { onEvent(GameUiEvent.ReminderOffsetChanged(it)) }
+                    onOffsetSelected = { onEvent(AppUiEvent.ReminderOffsetChanged(it)) }
                 )
 
                 NotificationModeSelector(
                     selectedMode = uiState.newEventNotificationMode,
-                    onModeSelected = { onEvent(GameUiEvent.NotificationModeChanged(it)) }
+                    onModeSelected = { onEvent(AppUiEvent.NotificationModeChanged(it)) }
                 )
             }
         },
         confirmButton = {
             Button(
-                onClick = { onEvent(GameUiEvent.SaveEvent) },
+                onClick = { onEvent(AppUiEvent.SaveEvent) },
                 enabled = uiState.newEventTitle.isNotBlank() && uiState.isTimeSelected
             ) {
-                Text(stringResource(R.string.save))
+                Text("Save")
             }
         },
         dismissButton = {
-            TextButton(onClick = { onEvent(GameUiEvent.ToggleAddDialog) }) {
-                Text(stringResource(R.string.cancel))
+            TextButton(onClick = { onEvent(AppUiEvent.ToggleAddDialog) }) {
+                Text("Cancel")
             }
         }
     )
@@ -264,7 +414,9 @@ private fun EventTypeSelector(
             readOnly = true,
             label = { Text("Type") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -303,9 +455,11 @@ private fun AppSelector(
             value = selectedAppName,
             onValueChange = {},
             readOnly = true,
-            label = { Text("App/Game") },
+            label = { Text("Linked App/Game") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -404,7 +558,9 @@ private fun RepeatRuleSelector(
             readOnly = true,
             label = { Text("Repeat") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -442,7 +598,9 @@ private fun ReminderOffsetSelector(
             readOnly = true,
             label = { Text("Reminder Offset") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -478,7 +636,9 @@ private fun NotificationModeSelector(
             readOnly = true,
             label = { Text("Notification Mode") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,

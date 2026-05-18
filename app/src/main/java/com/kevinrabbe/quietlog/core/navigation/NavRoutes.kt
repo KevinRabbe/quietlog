@@ -7,6 +7,6 @@ object NavRoutes {
     const val HOME = "home"
     const val REMINDERS = "reminders"
     const val SHOPPING = "shopping"
-    const val GAMES = "games"
+    const val APPS = "apps"
     const val SETTINGS = "settings"
 }

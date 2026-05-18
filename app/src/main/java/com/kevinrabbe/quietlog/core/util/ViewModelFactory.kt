@@ -7,7 +7,7 @@ import com.kevinrabbe.quietlog.QuietLogApplication
 import com.kevinrabbe.quietlog.feature.reminders.ReminderViewModel
 import com.kevinrabbe.quietlog.feature.settings.SettingsViewModel
 import com.kevinrabbe.quietlog.feature.shopping.ShoppingViewModel
-import com.kevinrabbe.quietlog.feature.games.GameViewModel
+import com.kevinrabbe.quietlog.feature.apps.AppViewModel
 
 import com.kevinrabbe.quietlog.feature.home.HomeViewModel
 
@@ -50,8 +50,8 @@ val ViewModelProvider.Factory.Companion.AppFactory: ViewModelProvider.Factory
                         reminderScheduler = container.shoppingReminderScheduler
                     ) as T
                 }
-                GameViewModel::class.java -> {
-                    GameViewModel(
+                AppViewModel::class.java -> {
+                    AppViewModel(
                         application = application,
                         observeGameEventsUseCase = container.observeGameEventsUseCase,
                         createGameEventUseCase = container.createGameEventUseCase,

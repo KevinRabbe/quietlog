@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.kevinrabbe.quietlog.feature.games.GamesScreen
+import com.kevinrabbe.quietlog.feature.apps.AppsScreen
 import com.kevinrabbe.quietlog.feature.home.HomeScreen
 import com.kevinrabbe.quietlog.feature.reminders.RemindersScreen
 import com.kevinrabbe.quietlog.feature.settings.SettingsScreen
@@ -45,8 +45,8 @@ fun QuietLogNavHost(
         composable(NavRoutes.SHOPPING) {
             ShoppingScreen()
         }
-        composable(NavRoutes.GAMES) {
-            GamesScreen()
+        composable(NavRoutes.APPS) {
+            AppsScreen()
         }
         composable(NavRoutes.SETTINGS) {
             SettingsScreen()

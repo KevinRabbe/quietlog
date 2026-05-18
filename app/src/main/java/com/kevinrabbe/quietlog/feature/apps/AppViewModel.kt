@@ -1,4 +1,4 @@
-package com.kevinrabbe.quietlog.feature.games
+package com.kevinrabbe.quietlog.feature.apps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,15 +17,15 @@ import android.app.Application
 import android.content.Intent
 import kotlinx.coroutines.Dispatchers
 
-class GameViewModel(
+class AppViewModel(
     private val application: Application,
     private val observeGameEventsUseCase: ObserveGameEventsUseCase,
     private val createGameEventUseCase: CreateGameEventUseCase,
     private val deleteGameEventUseCase: DeleteGameEventUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(GameUiState())
-    val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(AppUiState())
+    val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
     init {
         observeEvents()
@@ -61,38 +61,38 @@ class GameViewModel(
         }
     }
 
-    fun onEvent(event: GameUiEvent) {
+    fun onEvent(event: AppUiEvent) {
         when (event) {
-            is GameUiEvent.ToggleAddDialog -> {
-                android.util.Log.d("QuietLog", "Game ToggleAddDialog clicked! Current isAddingEvent = ${_uiState.value.isAddingEvent}")
+            is AppUiEvent.ToggleAddDialog -> {
+                android.util.Log.d("QuietLog", "App ToggleAddDialog clicked! Current isAddingEvent = ${_uiState.value.isAddingEvent}")
                 _uiState.update { it.copy(isAddingEvent = !it.isAddingEvent) }
-                android.util.Log.d("QuietLog", "Game ToggleAddDialog finished! New isAddingEvent = ${_uiState.value.isAddingEvent}")
+                android.util.Log.d("QuietLog", "App ToggleAddDialog finished! New isAddingEvent = ${_uiState.value.isAddingEvent}")
             }
-            is GameUiEvent.TitleChanged -> {
+            is AppUiEvent.TitleChanged -> {
                 _uiState.update { it.copy(newEventTitle = event.title) }
             }
-            is GameUiEvent.TypeChanged -> {
+            is AppUiEvent.TypeChanged -> {
                 _uiState.update { it.copy(newEventType = event.type) }
             }
-            is GameUiEvent.DateTimeChanged -> {
+            is AppUiEvent.DateTimeChanged -> {
                 _uiState.update { it.copy(newEventDateTime = event.millis, isTimeSelected = true) }
             }
-            is GameUiEvent.PackageNameChanged -> {
+            is AppUiEvent.PackageNameChanged -> {
                 _uiState.update { it.copy(newEventPackageName = event.packageName) }
             }
-            is GameUiEvent.ReminderOffsetChanged -> {
+            is AppUiEvent.ReminderOffsetChanged -> {
                 _uiState.update { it.copy(newEventReminderOffset = event.offsetMinutes) }
             }
-            is GameUiEvent.RepeatRuleChanged -> {
+            is AppUiEvent.RepeatRuleChanged -> {
                 _uiState.update { it.copy(newEventRepeatRule = event.rule) }
             }
-            is GameUiEvent.NotificationModeChanged -> {
+            is AppUiEvent.NotificationModeChanged -> {
                 _uiState.update { it.copy(newEventNotificationMode = event.mode) }
             }
-            is GameUiEvent.SaveEvent -> {
+            is AppUiEvent.SaveEvent -> {
                 saveEvent()
             }
-            is GameUiEvent.DeleteEvent -> {
+            is AppUiEvent.DeleteEvent -> {
                 viewModelScope.launch {
                     deleteGameEventUseCase(event.id)
                 }

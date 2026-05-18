@@ -2,10 +2,10 @@ package com.kevinrabbe.quietlog.core.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -31,10 +31,10 @@ enum class BottomNavDestination(
         label = "Shopping",
         icon = Icons.Filled.ShoppingCart
     ),
-    GAMES(
-        route = NavRoutes.GAMES,
-        label = "Games",
-        icon = Icons.Filled.SportsEsports
+    APPS(
+        route = NavRoutes.APPS,
+        label = "Apps",
+        icon = Icons.Filled.Apps
     ),
     SETTINGS(
         route = NavRoutes.SETTINGS,

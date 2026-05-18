@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.Notifications
@@ -176,7 +177,7 @@ fun HomeScreen(
                         uiState.todayGameEvents.forEach { event ->
                             DashboardGameEventItem(
                                 event = event,
-                                onClick = { onNavigateToTab(NavRoutes.GAMES) }
+                                onClick = { onNavigateToTab(NavRoutes.APPS) }
                             )
                         }
                     }
@@ -199,7 +200,7 @@ fun HomeScreen(
                         items.add(event.timestamp to {
                             DashboardGameEventItem(
                                 event = event,
-                                onClick = { onNavigateToTab(NavRoutes.GAMES) }
+                                onClick = { onNavigateToTab(NavRoutes.APPS) }
                             )
                         })
                     }
@@ -308,7 +309,7 @@ fun HomeScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onNavigateToTab(NavRoutes.GAMES) },
+                                .clickable { onNavigateToTab(NavRoutes.APPS) },
                             shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
@@ -414,10 +415,10 @@ fun HomeScreen(
                     onClick = { onNavigateToTab(NavRoutes.SHOPPING) }
                 )
                 QuickActionCard(
-                    title = "Add Event",
-                    icon = Icons.Default.SportsEsports,
+                    title = "Add App Event",
+                    icon = Icons.Default.Apps,
                     modifier = Modifier.weight(1f),
-                    onClick = { onNavigateToTab(NavRoutes.GAMES) }
+                    onClick = { onNavigateToTab(NavRoutes.APPS) }
                 )
             }
         }

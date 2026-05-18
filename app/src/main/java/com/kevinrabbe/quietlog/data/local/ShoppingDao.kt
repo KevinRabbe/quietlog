@@ -23,4 +23,27 @@ interface ShoppingDao {
 
     @Query("DELETE FROM shopping_items WHERE is_checked = 1")
     suspend fun deleteChecked()
+
+    // --- Category DAO methods ---
+
+    @Query("SELECT * FROM shopping_categories ORDER BY sort_order ASC")
+    fun observeCategories(): Flow<List<ShoppingCategoryEntity>>
+
+    @Query("SELECT * FROM shopping_categories ORDER BY sort_order ASC")
+    suspend fun getCategories(): List<ShoppingCategoryEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCategory(entity: ShoppingCategoryEntity): Long
+
+    @Update
+    suspend fun updateCategory(entity: ShoppingCategoryEntity)
+
+    @Query("DELETE FROM shopping_categories WHERE id = :id")
+    suspend fun deleteCategoryById(id: Long)
+
+    @Query("UPDATE shopping_items SET category_id = null WHERE category_id = :categoryId")
+    suspend fun unlinkItemsFromCategory(categoryId: Long)
+
+    @Query("UPDATE shopping_categories SET is_default = 0")
+    suspend fun clearDefaultCategory()
 }

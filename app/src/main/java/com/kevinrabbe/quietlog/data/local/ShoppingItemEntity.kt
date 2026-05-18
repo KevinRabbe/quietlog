@@ -10,5 +10,7 @@ data class ShoppingItemEntity(
     val id: Long = 0,
     val title: String,
     @ColumnInfo(name = "is_checked") val isChecked: Boolean,
+    @ColumnInfo(name = "quantity", defaultValue = "1") val quantity: Int = 1,
+    @ColumnInfo(name = "category_id") val categoryId: Long? = null,
     @ColumnInfo(name = "created_at") val createdAt: Long
 )

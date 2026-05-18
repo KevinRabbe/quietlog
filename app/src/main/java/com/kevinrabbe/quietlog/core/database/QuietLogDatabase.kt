@@ -11,13 +11,16 @@ import com.kevinrabbe.quietlog.data.local.ShoppingItemEntity
 import com.kevinrabbe.quietlog.data.local.GameEventDao
 import com.kevinrabbe.quietlog.data.local.GameEventEntity
 
+import com.kevinrabbe.quietlog.data.local.ShoppingCategoryEntity
+
 @Database(
     entities = [
         ReminderEntity::class,
         ShoppingItemEntity::class,
-        GameEventEntity::class
+        GameEventEntity::class,
+        ShoppingCategoryEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class QuietLogDatabase : RoomDatabase() {

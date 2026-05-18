@@ -52,6 +52,18 @@ class NotificationHelper(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Done Action
+        val doneIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = NotificationActionReceiver.ACTION_DONE
+            putExtra(NotificationActionReceiver.EXTRA_REMINDER_ID, id)
+        }
+        val donePendingIntent = PendingIntent.getBroadcast(
+            context,
+            id.toInt() + 1,
+            doneIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher) // Fallback to launcher icon
             .setContentTitle(title)
@@ -60,6 +72,7 @@ class NotificationHelper(private val context: Context) {
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .addAction(R.mipmap.ic_launcher, context.getString(R.string.action_done), donePendingIntent)
             .build()
 
         notificationManager.notify(id.toInt(), notification)

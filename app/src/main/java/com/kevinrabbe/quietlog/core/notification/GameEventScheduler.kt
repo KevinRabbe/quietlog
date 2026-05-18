@@ -7,13 +7,14 @@ import android.content.Intent
 import android.os.Build
 import com.kevinrabbe.quietlog.domain.model.GameEvent
 import com.kevinrabbe.quietlog.domain.model.NotificationMode
+import com.kevinrabbe.quietlog.domain.repository.GameEventScheduler
 
-class GameEventScheduler(
+class AlarmGameEventScheduler(
     private val context: Context
-) {
+) : GameEventScheduler {
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    fun schedule(event: GameEvent) {
+    override fun schedule(event: GameEvent) {
         val intent = Intent(context, GameEventNotificationReceiver::class.java).apply {
             putExtra(GameEventNotificationReceiver.EXTRA_EVENT_ID, event.id)
             putExtra(GameEventNotificationReceiver.EXTRA_EVENT_TITLE, event.title)
@@ -49,7 +50,7 @@ class GameEventScheduler(
         }
     }
 
-    fun cancel(eventId: Long) {
+    override fun cancel(eventId: Long) {
         val intent = Intent(context, GameEventNotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,

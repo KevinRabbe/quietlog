@@ -5,4 +5,49 @@
     <string name="nav_shopping">Shopping</string>
     <string name="nav_games">Games</string>
     <string name="nav_settings">Settings</string>
+
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="title">Title</string>
+    <string name="ok">OK</string>
+    <string name="change">Change</string>
+
+    <!-- Reminders -->
+    <string name="reminders_title">Reminders</string>
+    <string name="reminders_empty">No reminders yet</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="action_done">Done</string>
+    <string name="content_description_add_reminder">Add Reminder</string>
+    <string name="content_description_no_reminders">No reminders</string>
+
+    <!-- Games -->
+    <string name="games_title">Games</string>
+    <string name="games_empty">No game events yet</string>
+    <string name="add_game_event">Add Game Event</string>
+    <string name="content_description_add_game_event">Add Event</string>
+    <string name="content_description_no_game_events">No game events</string>
+
+    <!-- Shopping -->
+    <string name="shopping_title">Shopping List</string>
+    <string name="shopping_empty">Your shopping list is empty</string>
+    <string name="shopping_add_item_hint">Add item&#8230;</string>
+    <string name="finish_shopping">Finish Shopping</string>
+    <string name="content_description_empty_shopping">Empty shopping list</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_enable_notifications">Enable Notifications</string>
+    <string name="settings_enable_notifications_desc">Show reminders in the notification bar</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_snooze_title">Default Snooze Duration</string>
+    <string name="settings_shopping_delay_title">Shopping Reminder Delay</string>
+    <string name="settings_minutes">%d minutes</string>
+    <string name="settings_about_title">About</string>
+    <string name="settings_version">QuietLog v%s</string>
+    <string name="settings_desc">Offline-first private planner.</string>
 </resources>

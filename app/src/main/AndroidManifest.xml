@@ -42,6 +42,14 @@
             android:exported="false" />
 
         <receiver
+            android:name=".core.notification.ShoppingReminderReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".core.notification.NotificationActionReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".core.notification.BootReceiver"
             android:exported="true">
             <intent-filter>

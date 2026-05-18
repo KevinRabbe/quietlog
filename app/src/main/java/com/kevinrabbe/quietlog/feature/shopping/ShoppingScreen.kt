@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -14,11 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kevinrabbe.quietlog.R
 import com.kevinrabbe.quietlog.core.util.AppFactory
 import com.kevinrabbe.quietlog.domain.model.ShoppingListItem
 
@@ -32,10 +33,12 @@ fun ShoppingScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Shopping List") },
+                title = { Text(stringResource(R.string.shopping_title)) },
                 actions = {
-                    IconButton(onClick = { viewModel.onEvent(ShoppingEvent.ClearChecked) }) {
-                        Icon(Icons.Default.ClearAll, contentDescription = "Clear Checked")
+                    if (uiState.items.any { it.isChecked }) {
+                        TextButton(onClick = { viewModel.onEvent(ShoppingEvent.ClearChecked) }) {
+                            Text(stringResource(R.string.finish_shopping))
+                        }
                     }
                 }
             )
@@ -53,7 +56,7 @@ fun ShoppingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Add item...") },
+                placeholder = { Text(stringResource(R.string.shopping_add_item_hint)) },
                 singleLine = true,
                 shape = MaterialTheme.shapes.medium,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -68,13 +71,13 @@ fun ShoppingScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Empty shopping list",
+                            contentDescription = stringResource(R.string.content_description_empty_shopping),
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Your shopping list is empty",
+                            text = stringResource(R.string.shopping_empty),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

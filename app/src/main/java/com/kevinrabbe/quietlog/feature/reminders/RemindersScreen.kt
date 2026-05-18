@@ -17,10 +17,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kevinrabbe.quietlog.R
 import com.kevinrabbe.quietlog.core.util.AppFactory
 import com.kevinrabbe.quietlog.domain.model.Reminder
 import com.kevinrabbe.quietlog.domain.model.ReminderStatus
@@ -36,7 +38,7 @@ fun RemindersScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { viewModel.onEvent(ReminderEvent.ToggleAddDialog) }) {
-                Icon(Icons.Default.Add, contentDescription = "Add Reminder")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.content_description_add_reminder))
             }
         }
     ) { padding ->
@@ -70,13 +72,13 @@ fun RemindersScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.NotificationsOff,
-                            contentDescription = "No reminders",
+                            contentDescription = stringResource(R.string.content_description_no_reminders),
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "No reminders yet",
+                            text = stringResource(R.string.reminders_empty),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -100,17 +102,17 @@ fun RemindersScreen(
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
+        }
 
-            if (uiState.isAddingReminder) {
-                AddReminderDialog(
-                    title = uiState.newReminderTitle,
-                    onTitleChange = { viewModel.onEvent(ReminderEvent.TitleChanged(it)) },
-                    dateTimeMillis = uiState.newReminderDateTime,
-                    onDateTimeChange = { viewModel.onEvent(ReminderEvent.DateTimeChanged(it)) },
-                    onDismiss = { viewModel.onEvent(ReminderEvent.ToggleAddDialog) },
-                    onConfirm = { viewModel.onEvent(ReminderEvent.SaveReminder) }
-                )
-            }
+        if (uiState.isAddingReminder) {
+            AddReminderDialog(
+                title = uiState.newReminderTitle,
+                onTitleChange = { viewModel.onEvent(ReminderEvent.TitleChanged(it)) },
+                dateTimeMillis = uiState.newReminderDateTime,
+                onDateTimeChange = { viewModel.onEvent(ReminderEvent.DateTimeChanged(it)) },
+                onDismiss = { viewModel.onEvent(ReminderEvent.ToggleAddDialog) },
+                onConfirm = { viewModel.onEvent(ReminderEvent.SaveReminder) }
+            )
         }
     }
 }
@@ -250,10 +252,10 @@ fun AddReminderDialog(
                         onDateTimeChange(newCalendar.timeInMillis)
                     }
                     showDatePicker = false
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.cancel)) }
             }
         ) {
             DatePicker(state = datePickerState)
@@ -279,10 +281,10 @@ fun AddReminderDialog(
                     }
                     onDateTimeChange(newCalendar.timeInMillis)
                     showTimePicker = false
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
+                TextButton(onClick = { showTimePicker = false }) { Text(stringResource(R.string.cancel)) }
             },
             text = {
                 TimePicker(state = timePickerState)
@@ -292,13 +294,13 @@ fun AddReminderDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Reminder") },
+        title = { Text(stringResource(R.string.add_reminder)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 TextField(
                     value = title,
                     onValueChange = onTitleChange,
-                    label = { Text("Title") },
+                    label = { Text(stringResource(R.string.title)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -313,7 +315,7 @@ fun AddReminderDialog(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     TextButton(onClick = { showDatePicker = true }) {
-                        Text("Change")
+                        Text(stringResource(R.string.change))
                     }
                 }
 
@@ -327,19 +329,19 @@ fun AddReminderDialog(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     TextButton(onClick = { showTimePicker = true }) {
-                        Text("Change")
+                        Text(stringResource(R.string.change))
                     }
                 }
             }
         },
         confirmButton = {
             Button(onClick = onConfirm, enabled = title.isNotBlank()) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

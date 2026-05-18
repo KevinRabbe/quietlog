@@ -23,13 +23,16 @@ import androidx.navigation.compose.rememberNavController
 import com.kevinrabbe.quietlog.core.design.QuietLogTheme
 import com.kevinrabbe.quietlog.core.navigation.BottomNavDestination
 import com.kevinrabbe.quietlog.core.navigation.QuietLogNavHost
+import com.kevinrabbe.quietlog.domain.model.AppTheme
 
 /**
  * Root composable. Wraps the app in [QuietLogTheme], hosts the [Scaffold] with
  * a bottom navigation bar, and delegates routing to [QuietLogNavHost].
  */
 @Composable
-fun QuietLogApp() {
+fun QuietLogApp(
+    theme: AppTheme = AppTheme.SYSTEM
+) {
     val context = LocalContext.current
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -47,7 +50,7 @@ fun QuietLogApp() {
         }
     }
 
-    QuietLogTheme {
+    QuietLogTheme(theme = theme) {
         val navController = rememberNavController()
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route

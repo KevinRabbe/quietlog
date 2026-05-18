@@ -6,10 +6,10 @@ import android.content.Intent
 import com.kevinrabbe.quietlog.QuietLogApplication
 import com.kevinrabbe.quietlog.domain.model.GameEventStatus
 import com.kevinrabbe.quietlog.domain.model.RepeatRule
+import com.kevinrabbe.quietlog.domain.util.TimeUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 class GameEventNotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -36,7 +36,7 @@ class GameEventNotificationReceiver : BroadcastReceiver() {
                             repository.updateEvent(event.copy(status = GameEventStatus.COMPLETED))
                         } else {
                             // Calculate next occurrence
-                            val nextTimestamp = calculateNextOccurrence(event.timestamp, event.repeatRule)
+                            val nextTimestamp = TimeUtils.calculateNextOccurrence(event.timestamp, event.repeatRule)
                             val updatedEvent = event.copy(timestamp = nextTimestamp)
                             
                             repository.updateEvent(updatedEvent)
@@ -48,24 +48,6 @@ class GameEventNotificationReceiver : BroadcastReceiver() {
                 }
             }
         }
-    }
-
-    private fun calculateNextOccurrence(currentTimestamp: Long, rule: RepeatRule): Long {
-        val cal = Calendar.getInstance().apply { timeInMillis = currentTimestamp }
-        when (rule) {
-            RepeatRule.DAILY -> cal.add(Calendar.DAY_OF_YEAR, 1)
-            RepeatRule.WEEKLY,
-            RepeatRule.MONDAY,
-            RepeatRule.TUESDAY,
-            RepeatRule.WEDNESDAY,
-            RepeatRule.THURSDAY,
-            RepeatRule.FRIDAY,
-            RepeatRule.SATURDAY,
-            RepeatRule.SUNDAY -> cal.add(Calendar.WEEK_OF_YEAR, 1)
-            RepeatRule.MONTHLY -> cal.add(Calendar.MONTH, 1)
-            RepeatRule.NONE -> { /* handled outside */ }
-        }
-        return cal.timeInMillis
     }
 
     companion object {

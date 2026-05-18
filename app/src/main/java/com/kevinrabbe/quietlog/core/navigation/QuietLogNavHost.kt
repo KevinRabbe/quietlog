@@ -27,7 +27,17 @@ fun QuietLogNavHost(
         modifier = modifier
     ) {
         composable(NavRoutes.HOME) {
-            HomeScreen()
+            HomeScreen(
+                onNavigateToTab = { route ->
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
         composable(NavRoutes.REMINDERS) {
             RemindersScreen()

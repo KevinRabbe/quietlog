@@ -9,6 +9,8 @@ import com.kevinrabbe.quietlog.feature.settings.SettingsViewModel
 import com.kevinrabbe.quietlog.feature.shopping.ShoppingViewModel
 import com.kevinrabbe.quietlog.feature.games.GameViewModel
 
+import com.kevinrabbe.quietlog.feature.home.HomeViewModel
+
 /**
  * Factory to create ViewModels with dependencies from [AppContainer].
  */
@@ -20,6 +22,14 @@ val ViewModelProvider.Factory.Companion.AppFactory: ViewModelProvider.Factory
             val container = application.container
 
             return when (modelClass) {
+                HomeViewModel::class.java -> {
+                    HomeViewModel(
+                        reminderRepository = container.reminderRepository,
+                        shoppingRepository = container.shoppingRepository,
+                        gameEventRepository = container.gameEventRepository,
+                        settingsRepository = container.settingsRepository
+                    ) as T
+                }
                 ReminderViewModel::class.java -> {
                     ReminderViewModel(
                         observeRemindersUseCase = container.observeRemindersUseCase,
@@ -35,14 +45,17 @@ val ViewModelProvider.Factory.Companion.AppFactory: ViewModelProvider.Factory
                 }
                 ShoppingViewModel::class.java -> {
                     ShoppingViewModel(
-                        repository = container.shoppingRepository
+                        repository = container.shoppingRepository,
+                        settingsRepository = container.settingsRepository,
+                        reminderScheduler = container.shoppingReminderScheduler
                     ) as T
                 }
                 GameViewModel::class.java -> {
                     GameViewModel(
                         application = application,
-                        repository = container.gameEventRepository,
-                        scheduler = container.gameEventScheduler
+                        observeGameEventsUseCase = container.observeGameEventsUseCase,
+                        createGameEventUseCase = container.createGameEventUseCase,
+                        deleteGameEventUseCase = container.deleteGameEventUseCase
                     ) as T
                 }
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

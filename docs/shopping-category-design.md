@@ -139,6 +139,38 @@ Useful for repeated weekly shopping.
 
 ---
 
+### 9. Repeatable Shopping List Templates
+
+Users can create reusable shopping list templates for repeated shopping routines.
+
+Examples:
+
+- Weekly groceries
+- Monthly household
+- Pet supplies
+- Grandma shopping
+- Party snacks
+
+Expected behavior:
+
+- user creates or saves a list as a template
+- user can generate a fresh list from that template
+- generated list items start unchecked
+- categories and item order are preserved
+- template remains unchanged
+
+Optional schedule options:
+
+- weekly
+- every 2 weeks
+- monthly
+- manual only
+
+Important:
+This should create a new local list/reminder. It should not become cloud sync, account sync, or automatic store logic.
+
+---
+
 ## Default Categories
 
 On first install, QuietLog may create simple default categories:
@@ -193,6 +225,19 @@ createdAt
 updatedAt
 ```
 
+### ShoppingListTemplate
+
+Suggested fields:
+
+```text
+id
+name
+repeatRule
+lastGeneratedAt
+createdAt
+updatedAt
+```
+
 ### ShoppingItem
 
 Suggested fields:
@@ -201,6 +246,7 @@ Suggested fields:
 id
 listId
 categoryId
+templateId optional
 name
 quantity
 isChecked
@@ -231,6 +277,17 @@ Default category: Food ▼
 ▶ Household 0/3
 
 [Clear completed]
+```
+
+Template example:
+
+```text
+Templates
+- Weekly groceries
+- Monthly household
+
+Weekly groceries
+→ Create new list
 ```
 
 ---
